@@ -27,7 +27,7 @@ from data_preproc import DataPreproc
 
 
 class mcRBM:
-    def __init__(self, refDir, expConfigFilename, modelConfigFilename, gpuId):
+    def __init__(self, refDir, expConfigFilename, modelConfigFilename, gpuId=0):
         # directory containing all the configuration files for the experiment
         self.refDir = refDir
         # file with configuration details for the launched experiment
