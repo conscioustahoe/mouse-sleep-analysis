@@ -1,16 +1,14 @@
 
- Dataset : /notebooks/mouse-sleep-analysis/sample_data/sample_data.npz
- visData size: (36352, 11) 
+ Dataset : /home/mouse-sleep-analysis/sample_data/rgs14.npz
+ visData size: (10240, 4) 
  visData type: float32 
  
- visData Range: [10. 10. 10. 10. 10. 10. 10. 10. 10. 10. 10.] 
+ visData Range: [10. 10. 10. 10.] 
  
- visData min: [-5. -5. -5. -5. -5. -5. -5. -5. -5. -5. -5.] 
+ visData min: [-5. -5. -5. -5.] 
  
- visData max: [5. 5. 5. 5. 5. 5. 5. 5. 5. 5. 5.] 
+ visData max: [5. 5. 5. 5.] 
  
- visData mean: [0.93245995 1.0141774  1.4649427  0.97633994 0.88746816 0.81111777
- 0.6450506  1.119632   0.85739833 0.7982003  0.8040111 ] 
+ visData mean: [ 0.87606704 -2.4424973  -4.822949   -1.9066273 ] 
  
- visData std: [1.378036  1.3503861 1.2217808 1.5638069 1.3989936 1.5438662 1.7652577
- 1.2965012 1.6321182 1.6085635 1.9026147] 
+ visData std: [2.3459492  2.0527325  0.20551059 3.059061  ] 

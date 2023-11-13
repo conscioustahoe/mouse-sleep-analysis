@@ -1,0 +1,3 @@
+
+ The number of the unique latent activations is : 20
+ The sum of the unique latent activations' columns is : [20 20 20 20 20 20 20 20 20 20 20 14 10 19  3 19 10 11  0 19  7]
