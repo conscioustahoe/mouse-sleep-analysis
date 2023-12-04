@@ -624,18 +624,19 @@ class StatesAnalysis(object):
         Set features' labels for visualization part
         """		
         self.visibleFeatures = ['v%d' %(i+1) for i in range(self.d.shape[1])]
+        self.initFeatures = ['Delta', 'Theta', 'Delta/Theta', 'EMG']
 
-        if self.features=='bands':
-            self.initFeatures = ['Delta', 'Theta', 'Alpha', 'Beta', 'Gamma', 'EMG']
-        elif self.features=='ratios':
-            Bands = [r'$\delta$', r'$\theta$', r'$\alpha$', r'$\beta$', r'$\gamma$']
-            self.initFeatures = []		
-            for i in range(5):	
-                for j in range(i+1, 5):
-                    self.initFeatures.append(Bands[i] + '$/$' + Bands[j])		
-            self.initFeatures.append('EMG')
-        else:
-            self.initFeatures = ['f%d' %(i+1) for i in range( self.dinit.shape[1] )]		
+        # if self.features=='bands':
+        #     self.initFeatures = ['Delta', 'Theta', 'Delta/Theta', 'EMG']
+        # elif self.features=='ratios':
+        #     Bands = [r'$\delta$', r'$\theta$', r'$\alpha$', r'$\beta$', r'$\gamma$']
+        #     self.initFeatures = []		
+        #     for i in range(5):	
+        #         for j in range(i+1, 5):
+        #             self.initFeatures.append(Bands[i] + '$/$' + Bands[j])		
+        #     self.initFeatures.append('EMG')
+        # else:
+        #     self.initFeatures = ['f%d' %(i+1) for i in range( self.dinit.shape[1] )]		
 
         """
         Iterate through centroids/latent states and infer the visible
@@ -763,7 +764,7 @@ class StatesAnalysis(object):
                 self.obsKeysGroup = self.obsKeys[self.obsKeys[:, self.obsKeys.shape[1]-1] == self.group, :]
                 self.transitionsMatrix('./transMatrices/')			
 
-        del self.obsKeysGroup
+        # del self.obsKeysGroup
 
     def transitionsMatrix(self, saveDir):
         '''
@@ -1488,7 +1489,8 @@ class StatesAnalysis(object):
         bin_size = .01; min_edge = graph_minimum; max_edge = graph_maximum
 
         N = (max_edge-min_edge)/bin_size; Nplus1 = N + 1
-        bin_list = np.linspace(min_edge, max_edge, Nplus1)
+        print(f"calling np.linspace with {min_edge}, {max_edge}, {Nplus1}")
+        bin_list = np.linspace(int(min_edge), int(max_edge), int(Nplus1))
 
         [n, bins, patches] = plt.hist(entropies, bin_list, range=(graph_minimum, graph_maximum), edgecolor = 'none', facecolor = colors[1]['color'])
 
