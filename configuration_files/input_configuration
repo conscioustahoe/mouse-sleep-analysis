@@ -5,7 +5,7 @@
 # number of sweeeps through the training dataset
 num_epochs = 10000
 # number of samples in each batch (better if multiple of 8 on GPU)
-batch_size = 2048
+batch_size = 4096
 # after these many epochs, update the factor-hidden matrix (wait for visible-factor matrix to converge first)
 startFH = 10
 # start using L1 weight decay on weight matrices after <startwd> epochs

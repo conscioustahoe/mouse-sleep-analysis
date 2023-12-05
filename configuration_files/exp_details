@@ -18,7 +18,7 @@ dSetName = rgs14.npz
 expsDir = /home/mouse-sleep-analysis/sample_data/
 
 # give a name to your experiment:
-expID = mcRBManalysis
+expID = mcRBManalysis5Dec2023
 
 ############################################################################################################################
 # DATA PRE-PROCESSING FLAGS:                                                                                                            #

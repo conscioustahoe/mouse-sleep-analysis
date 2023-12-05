@@ -1,0 +1,12 @@
+
+ Modeling: /home/mouse-sleep-analysis/sample_data/rgs14.npz 
+ Dataset size: (10542, 4) 
+ Dataset type: float32 
+ 
+ d_min: [1.000000e-04 1.000000e-04 2.123358e-04 1.000000e-04] 
+ 
+ d_max: [1.000000e+00 1.000000e+00 9.041895e+03 1.000000e+00] 
+ 
+ d_mean: [0.5964856  0.2583701  5.168717   0.30306417] 
+ 
+ d_std: [ 0.22925034  0.2048084  88.15484     0.30388835] 
