@@ -1,0 +1,15 @@
+
+ Dataset size: (8192, 4) 
+ Dataset type: float32 
+ 
+ Pre-processing: scaling single
+ 
+ Data Range: [10. 10. 10. 10.] 
+ 
+ Data min: [-5. -5. -5. -5.] 
+ 
+ Data max: [5. 5. 5. 5.] 
+ 
+ Data mean: [ 1.2179487 -2.4930532 -4.9464297 -2.3428993] 
+ 
+ Data std: [2.3041382 2.0649872 0.1248129 2.8125145] 
