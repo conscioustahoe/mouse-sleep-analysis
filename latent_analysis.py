@@ -215,7 +215,7 @@ class StatesAnalysis(object):
 
 
         #labels = ['f%s' %i for i in range(self.d.shape[1])]
-        EEG_labels = ['Theta', 'Delta', 'Delta:Theta', 'Slope HPC', 'LZW HPC']
+        EEG_labels = ['Theta', 'Delta', 'Ratio', 'Slope', 'Complexity']
         EMG_labels = ['EMG']
         
         # if self.features=='bands':
@@ -456,7 +456,7 @@ class StatesAnalysis(object):
             fig = plt.figure(figsize=(20,15))
             ax1 = fig.add_subplot(111)
             #fig.suptitle('Number of epochs associated with this latent state: ' + str(len(latent_frames)) + '\nAwake: ' + str(length_awake*100) + '%, Nrem: ' + str(length_nrem*100) + '%, Rem: ' + str(length_rem*100) + '%', fontsize=30, fontweight='bold')
-            fig.suptitle('Latent State ' + str(lstate) + '\nWakefulness: ' + str(length_awake*100) + '%, NREM Sleep: ' + str(length_nrem*100) + '%, REM Sleep: ' + str(length_rem*100) + '%' + '\nTotal number of epochs: ' + str(len(latent_frames)), fontsize=30, fontweight='bold')
+            fig.suptitle('Latent State ' + str(lstate) + '\nWakefulness: ' + str(round(length_awake,3)*100) + '%, NREM Sleep: ' + str(round(length_nrem,3)*100) + '%, REM Sleep: ' + str(round(length_rem,3)*100) + '%' + '\nTotal number of epochs: ' + str(len(latent_frames)), fontsize=30, fontweight='bold')
 
             ax1.spines['top'].set_visible(False)
             #ax.spines['top'].set_color('none')

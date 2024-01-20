@@ -1,0 +1,18 @@
+
+ The mutual information is : 0.08467759750783443 bits
+ Stage 0 Entropy : 0.5307193
+ Stage 1 Entropy : 0.5307193
+ Stage 2 Entropy : 0.4206883
+ Variable Stage Entropy : 0.9514075815677643
+ Stage Entropy:
+ Wakefulness = 0.5307193
+ NREM = 0.5307193
+ REM = 0.4206883
+
+ Stage Normalized MI:
+ The MI/H(wake) = 0.08620401669273738
+ The MI/H(nrem) = 0.0
+ The MI/H(rem) = 0.09253279373832039
+
+ Overall Normalized MI:
+ The MI/H(Stage) = 0.08900244138090595
