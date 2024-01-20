@@ -88,7 +88,7 @@ class StatesAnalysis(object):
         self.rescaleFlag = config.getboolean('EXP_DETAILS','rescaleFlag')
         self.rescaling = config.get('EXP_DETAILS','rescaling')
         
-        self.saveDir = "/home/mouse-sleep-analysis/sample_data/mcRBManalysis24Dec2023"
+        self.saveDir = "/home/mouse-sleep-analysis/sample_data/mcRBManalysis19Jan2024"
         
     #-- Data Loading function:
     def loadData(self):
@@ -109,7 +109,7 @@ class StatesAnalysis(object):
         obsKeys = dataFile['obsKeys'].astype(int)
         self.epochTime = dataFile['epochTime']
 
-        self.sleepStages = ['Wakefulness', 'NREM sleep', 'REM sleep']
+        self.sleepStages = ['Wake', 'NREM', 'REM']
 
         """
         Back-project data to the log space for visualization
@@ -125,7 +125,7 @@ class StatesAnalysis(object):
         '''
         Method projecting the pre-processed data back to the log-space.
         '''
-
+        
         if self.doPCA:
             with open('./dataDetails/pca_obj.save') as pcaPklFile:
                 pca = pickle.load(pcaPklFile)
@@ -237,14 +237,16 @@ class StatesAnalysis(object):
             latent_frames = self.obsKeys[idx, :]
 
             length_awake = round((len(np.where((latent_frames[:,3]==1))[0])/float(len(latent_frames))),3)
-            length_nrem = round((len(np.where((latent_frames[:,3]==2))[0])/float(len(latent_frames))),3)
-            length_rem = round((len(np.where((latent_frames[:,3]==3))[0])/float(len(latent_frames))),3)
+            length_nrem = round((len(np.where((latent_frames[:,3]==3))[0])/float(len(latent_frames))),3)
+            length_rem = round((len(np.where((latent_frames[:,3]==5))[0])/float(len(latent_frames))),3)
 
             #dPlot = [self.d[idx, j] for j in range(self.d.shape[1])]
-
+            # print(f"self.dinit: {self.dinit}")
+            print(f"self.dinit.shape[1]: {self.dinit.shape[1]}")
             dPlotEEG = [self.dinit[idx, j] for j in range(self.dinit.shape[1]-1)]			
             dPlotEMG = [self.dinit[idx, self.dinit.shape[1]-1]]			
-
+            print(f"dPlotEEG: {dPlotEEG}")
+            print(f"dPlotEMG: {dPlotEMG}")
             # visualize boxplots per latent state
             self.BoxPlotsDouble(dPlotEEG, dPlotEMG, './boxPlotsBackProjectedData/', len(idx), i, EEG_labels, 
                                         EMG_labels, length_awake, length_nrem, length_rem, EEG_range, EMG_range)
@@ -368,8 +370,8 @@ class StatesAnalysis(object):
             latent_frames = self.obsKeys[np.where(self.obsKeys[:, 1] == lstate)[0], :]
 
             length_awake = round((len(np.where((latent_frames[:, latent_frames.shape[1]-3]==1))[0])/float(len(latent_frames))),3)
-            length_nrem = round((len(np.where((latent_frames[:, latent_frames.shape[1]-3]==2))[0])/float(len(latent_frames))),3)
-            length_rem = round((len(np.where((latent_frames[:, latent_frames.shape[1]-3]==3))[0])/float(len(latent_frames))),3)
+            length_nrem = round((len(np.where((latent_frames[:, latent_frames.shape[1]-3]==3))[0])/float(len(latent_frames))),3)
+            length_rem = round((len(np.where((latent_frames[:, latent_frames.shape[1]-3]==5))[0])/float(len(latent_frames))),3)
 
             '''
             Initialize subjects' counts to 0:
@@ -624,7 +626,7 @@ class StatesAnalysis(object):
         Set features' labels for visualization part
         """		
         self.visibleFeatures = ['v%d' %(i+1) for i in range(self.d.shape[1])]
-        self.initFeatures = ['Delta', 'Theta', 'Delta/Theta', 'EMG']
+        self.initFeatures = ['Theta', 'Delta', 'Delta:Theta', 'Slope HPC', 'LZW HPC', 'EMG']
 
         # if self.features=='bands':
         #     self.initFeatures = ['Delta', 'Theta', 'Delta/Theta', 'EMG']
@@ -1314,6 +1316,7 @@ class StatesAnalysis(object):
         '''
 
         plt.style.use('bmh')
+        
         colors = list(plt.rcParams['axes.prop_cycle'])
 
         fig = plt.figure(figsize=(15, 10)) 
@@ -1323,8 +1326,9 @@ class StatesAnalysis(object):
         fig.suptitle('LS ' + str(i) + ' - Total: ' + str(population) + ' epochs' + 
                      '\nWAKE: ' + str(length_awake*100) + '%, NREM: ' + str(length_nrem*100) + 
                      '%, REM: ' + str(length_rem*100) + '%', y=1.001, fontsize=35, fontweight='bold')
+        print(f"ax1.get_xticks(): {ax1.get_xticks()}")
         bp1 = ax1.boxplot(d_to_plot_1, patch_artist=True)
-
+        print(f"ax1.get_xticks(): {ax1.get_xticks()}")
         ax1.grid(False)
         ax1.patch.set_facecolor('0.85')
         ax1.patch.set_alpha(0.5)
@@ -1366,7 +1370,7 @@ class StatesAnalysis(object):
         
         print("Length of labels_1:", len(labels_1))
         print("Number of tick locations on ax1:", len(ax1.get_xticks()))
-
+        print("tick locations on ax1:", ax1.get_xticks())
         xtickNames = ax1.set_xticklabels(labels_1)
         plt.setp(xtickNames, rotation=90, fontsize=35, fontweight='bold')
 
