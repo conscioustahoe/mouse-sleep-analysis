@@ -215,7 +215,7 @@ class StatesAnalysis(object):
 
 
         #labels = ['f%s' %i for i in range(self.d.shape[1])]
-        EEG_labels = ['Delta', 'Theta', 'Delta/Theta']
+        EEG_labels = ['Theta', 'Delta', 'Delta:Theta', 'Slope HPC', 'LZW HPC']
         EMG_labels = ['EMG']
         
         # if self.features=='bands':

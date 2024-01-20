@@ -113,21 +113,11 @@ class mcRBM:
             dLoad = loadmat(self.dataFilename)
         else:
             print("error! Unrecognized data file")
+        
         self.d = dLoad['d']
         self.obsKeys = dLoad['epochsLinked']
         self.epochTime = dLoad['epochTime']
         
-        print(type(self.d))
-        print(self.d.shape)
-        print(self.d)
-
-        print(type(self.obsKeys))
-        print(self.obsKeys.shape)
-        print(self.obsKeys)
-
-        print(type(self.epochTime))
-        print(self.epochTime.shape)
-        print(self.epochTime)
         
         """
         If you want to keep only EEG features, uncomment next line.
