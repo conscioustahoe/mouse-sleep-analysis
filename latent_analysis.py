@@ -24,15 +24,15 @@ import sys;
 from data_preproc import DataPreproc
 
 
-class StatesAnalysis(object):	
+class StatesAnalysis(object):   
     '''
     Object performing the analysis of the observed latent states in terms
     of sleep physiology.
-	'''
-	
+    '''
+    
     def __init__(self, refDir, expConfigFilename, epochID, threshold, multi, norm, features, groupNames):
         # directory containing all the configuration files for the experiment
-        self.refDir = "/home/mouse-sleep-analysis/configuration_files/"
+        self.refDir = refDir
         # file with configuration details for the launched experiment
         self.expConfigFilename = expConfigFilename
         # data pre-processing object
@@ -56,11 +56,11 @@ class StatesAnalysis(object):
         
         if self.multi:
             print("A multi-subject experiment is being analyzed..")
-			# in case of multi subject analysis, the names of mouse groups
-			# need to be given in the same order as they have been stored
-			# in the dataset
+            # in case of multi subject analysis, the names of mouse groups
+            # need to be given in the same order as they have been stored
+            # in the dataset
             self.groupNames = [k for k in groupNames.split(',')]
-			#print(self.groupNames)
+            #print(self.groupNames)
         
         np.random.seed(124)
         self.prng = RandomState(123)
@@ -71,7 +71,7 @@ class StatesAnalysis(object):
         '''
         
         config = ConfigParser()
-        config.read(self.refDir + self.expConfigFilename)
+        config.read(self.refDir + "configuration_files/" + self.expConfigFilename)
                 
         #-- Experiment details:        
         self.dataDir = config.get('EXP_DETAILS','dsetDir')
@@ -88,7 +88,7 @@ class StatesAnalysis(object):
         self.rescaleFlag = config.getboolean('EXP_DETAILS','rescaleFlag')
         self.rescaling = config.get('EXP_DETAILS','rescaling')
         
-        self.saveDir = "/home/mouse-sleep-analysis/sample_data/mcRBManalysis"
+        self.saveDir = self.refDir + "sample_data/mcRBManalysisSmoothed"
         
     #-- Data Loading function:
     def loadData(self):
@@ -145,14 +145,14 @@ class StatesAnalysis(object):
             d = self.backProjectionScaling(self.scaling, d, minMax['dMaxRow'], minMax['dMinRow'], minMax['dMin'], 
                                     minMax['dMax'], minMax['dMean'], minMax['dStd'])
 
-        return d			
+        return d            
     
     def backProjectionScaling(self, scaling, d, dMaxRow, dMinRow, dMin, dMax, dMean, dStd):
         '''
         Method for projecting back the scaled data.
         '''
 
-        if 'single' in scaling:			
+        if 'single' in scaling:         
             d = ( (d+5.) * (dMaxRow - dMinRow) ) /10. + dMinRow
         elif 'global' in scaling:
             d = ( (d+5.) * (dMax - dMin) ) /10. + dMin
@@ -165,9 +165,9 @@ class StatesAnalysis(object):
         elif 'stdz' in scaling:
             d = d * dStd + dMean
         elif 'minZero' in scaling:
-            d = d + dMinRow			
+            d = d + dMinRow         
 
-        return d			
+        return d            
 
     #-- Latent States Analysis --#
     def analyzeStates(self):
@@ -176,13 +176,13 @@ class StatesAnalysis(object):
         associated with the observed latent states.
         '''
 
-        # Move in the current training epoch's folder		
-        os.chdir('analysis/epoch%d' %self.epochID)	
+        # Move in the current training epoch's folder       
+        os.chdir('analysis/epoch%d' %self.epochID)  
         # Get current path:
         os.getcwd()
 
         if not os.path.isdir('boxPlotsBackProjectedData'):
-            os.makedirs('boxPlotsBackProjectedData')	
+            os.makedirs('boxPlotsBackProjectedData')    
 
         # Load unique latent activations
         fileName = 'uniqueStates.npz'
@@ -199,7 +199,7 @@ class StatesAnalysis(object):
         In case of multi-subject analysis:
         insert a column to give to each epoch the label of the strain (e.g. 1,2,3)
         it belongs to.
-        """		
+        """     
         if self.multi:
             self.obsKeys = np.insert(self.obsKeys, self.obsKeys.shape[1], 0, axis=1)
             for i in range(self.obsKeys.shape[0]):
@@ -222,8 +222,8 @@ class StatesAnalysis(object):
         #     EEG_labels = ['Delta', 'Theta', 'Alpha', 'Beta', 'Gamma']
         # elif self.features=='ratios':
         #     Bands = [r'$\delta$', r'$\theta$', r'$\alpha$', r'$\beta$', r'$\gamma$']
-        #     EEG_labels = []		
-        #     for i in range(5):	
+        #     EEG_labels = []       
+        #     for i in range(5):    
         #         for j in range(i+1, 5):
         #             EEG_labels.append(Bands[i] + '$/$' + Bands[j])
         # else:
@@ -233,7 +233,7 @@ class StatesAnalysis(object):
         EMG_range = [math.floor(self.dinit[:,self.dinit.shape[1]-1].min()), math.ceil(self.dinit[:,self.dinit.shape[1]-1].max())]
         for i in self.uniqueStates[:, 0]:
 
-            idx = np.where( self.obsKeys[:, 1] == i )[0]			
+            idx = np.where( self.obsKeys[:, 1] == i )[0]            
             latent_frames = self.obsKeys[idx, :]
 
             length_awake = round((len(np.where((latent_frames[:,3]==1))[0])/float(len(latent_frames))),3)
@@ -243,8 +243,8 @@ class StatesAnalysis(object):
             #dPlot = [self.d[idx, j] for j in range(self.d.shape[1])]
             # print(f"self.dinit: {self.dinit}")
             print(f"self.dinit.shape[1]: {self.dinit.shape[1]}")
-            dPlotEEG = [self.dinit[idx, j] for j in range(self.dinit.shape[1]-1)]			
-            dPlotEMG = [self.dinit[idx, self.dinit.shape[1]-1]]			
+            dPlotEEG = [self.dinit[idx, j] for j in range(self.dinit.shape[1]-1)]           
+            dPlotEMG = [self.dinit[idx, self.dinit.shape[1]-1]]         
             print(f"dPlotEEG: {dPlotEEG}")
             print(f"dPlotEMG: {dPlotEMG}")
             # visualize boxplots per latent state
@@ -273,11 +273,11 @@ class StatesAnalysis(object):
         os.getcwd()
 
         if not os.path.isdir('groupBoxPlots'):
-            os.makedirs('groupBoxPlots')	
+            os.makedirs('groupBoxPlots')    
         if not os.path.isdir('ttest'):
             os.makedirs('ttest')
         if not os.path.isdir('barPlots'):
-            os.makedirs('barPlots')		
+            os.makedirs('barPlots')     
 
         """
         Find the unique latent-states' IDs
@@ -321,7 +321,7 @@ class StatesAnalysis(object):
 
 
         #-- Create Subjects' Distribution : for how many epochs each subject appears in each latent-state
-        for i in range(self.subjectsDistr.shape[0]):			
+        for i in range(self.subjectsDistr.shape[0]):            
             subjectFrames = self.obsKeys[self.obsKeys[:,4]==self.subjectsDistr[i, self.subjectsDistr.shape[1]-2],:]
             print(("Subject:", self.subjectsDistr[i, self.subjectsDistr.shape[1]-2], "of latent size:", subjectFrames.shape))
 
@@ -412,7 +412,7 @@ class StatesAnalysis(object):
                     if subject not in Lb:
                         if int(str(subject)[0])==str_ID:
                             Lb.append(subject)
-                            Counts.append(C_matrix[idx_posit,1])		
+                            Counts.append(C_matrix[idx_posit,1])        
 
             LatentCounts['l_state_' + str(lstate)] = {}
             LatentCounts['l_state_' + str(lstate)]['counts'] = np.asarray(Counts)
@@ -424,7 +424,7 @@ class StatesAnalysis(object):
 
             '''
             Create a square array (Number_of_strains * Number_of_strains)
-            '''			
+            '''         
             tt_statistic = np.zeros((len(self.strainIDs), len(self.strainIDs)), dtype=float32)
             tt_pvalues = np.zeros((len(self.strainIDs), len(self.strainIDs)), dtype=float32)
 
@@ -477,7 +477,7 @@ class StatesAnalysis(object):
             for i in range(len(self.num_subjs_per_strain)-1):
                 idx_start = idx_start+self.num_subjs_per_strain[self.strainIDs1[i]]
                 idx_end = idx_end+self.num_subjs_per_strain[self.strainIDs1[i+1]]
-                strain_bar[i+1] = ax1.bar(ind[idx_start:idx_end], Counts[idx_start:idx_end]/self.lstatesPopulation[lstate], width, color=colors[i+1], edgecolor = "none")	
+                strain_bar[i+1] = ax1.bar(ind[idx_start:idx_end], Counts[idx_start:idx_end]/self.lstatesPopulation[lstate], width, color=colors[i+1], edgecolor = "none")   
 
             ax1.set_ylabel('Count', fontweight='bold', fontsize=30)
             ax1.set_xlabel('Subjects', fontweight='bold', fontsize=30)
@@ -501,7 +501,7 @@ class StatesAnalysis(object):
                 yint.append( round(each, 2) )
             plt.yticks(yint)
 
-            ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=20)			
+            ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=20)           
 
             fname = 'lState_' + str(lstate) + '.png'
             fname = os.path.join('./barPlots/', fname)
@@ -592,7 +592,7 @@ class StatesAnalysis(object):
             plt.setp(bp['whiskers'], color='k', linestyle='--', linewidth=4.5)
 
             plt.setp(bp['medians'],          # customize median lines
-                     color='k',				 # line colour
+                     color='k',              # line colour
                      linewidth=5.)           # line thickness
 
 
@@ -624,7 +624,7 @@ class StatesAnalysis(object):
 
         """
         Set features' labels for visualization part
-        """		
+        """     
         self.visibleFeatures = ['v%d' %(i+1) for i in range(self.d.shape[1])]
         self.initFeatures = ['Theta', 'Delta', 'Delta:Theta', 'Slope HPC', 'LZW HPC', 'EMG']
 
@@ -632,13 +632,13 @@ class StatesAnalysis(object):
         #     self.initFeatures = ['Delta', 'Theta', 'Delta/Theta', 'EMG']
         # elif self.features=='ratios':
         #     Bands = [r'$\delta$', r'$\theta$', r'$\alpha$', r'$\beta$', r'$\gamma$']
-        #     self.initFeatures = []		
-        #     for i in range(5):	
+        #     self.initFeatures = []        
+        #     for i in range(5):    
         #         for j in range(i+1, 5):
-        #             self.initFeatures.append(Bands[i] + '$/$' + Bands[j])		
+        #             self.initFeatures.append(Bands[i] + '$/$' + Bands[j])     
         #     self.initFeatures.append('EMG')
         # else:
-        #     self.initFeatures = ['f%d' %(i+1) for i in range( self.dinit.shape[1] )]		
+        #     self.initFeatures = ['f%d' %(i+1) for i in range( self.dinit.shape[1] )]      
 
         """
         Iterate through centroids/latent states and infer the visible
@@ -651,7 +651,7 @@ class StatesAnalysis(object):
         minCovVis = 1.
         maxCovVis = -1.
         minCovBack = 1.
-        maxCovBack = -1.		
+        maxCovBack = -1.        
         for lstate in self.uniqueStates[:, 0]:
             if not os.path.isdir('./distributions/lState%d' %lstate):
                 os.makedirs('./distributions/lState%d' %lstate)
@@ -675,7 +675,7 @@ class StatesAnalysis(object):
             """
             Look for min/max values of all covariance matrices for scaling matrices
             for visualization if wished
-            """			
+            """         
             if np.cov(d_back.T).min() < minCovBack:
                 minCovBack = np.cov(d_back.T).min()
             if np.cov(d_back.T).max() > maxCovBack:
@@ -706,7 +706,7 @@ class StatesAnalysis(object):
 
         nonSingle = self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, :]
 
-        ids_NonSingle = np.unique(nonSingle[:, 0])		
+        ids_NonSingle = np.unique(nonSingle[:, 0])      
 
         #--- Create save folder :
         if not os.path.isdir('heatMap'):
@@ -716,9 +716,9 @@ class StatesAnalysis(object):
         Compute each latent state's PDF according to how many epochs 
         were manually labeled as Wakefulness, NREM, REM. This can be
         visualized with an RGB color shade.
-        """	
+        """ 
 
-        self.lstateColor, self.lstateCount = self.lstateStageDistribution(self.obsKeys, 1, 3)	
+        self.lstateColor, self.lstateCount = self.lstateStageDistribution(self.obsKeys, 1, 3)   
         np.savez_compressed('./heatMap/lstateColor.npz', lstateColor=self.lstateColor, lstateCount=self.lstateCount)
 
         #-- Re-order matrix for Visualization:
@@ -731,7 +731,7 @@ class StatesAnalysis(object):
         self.idxFramesKeep = []
         for i in range(self.obsKeys.shape[0]):
             if self.obsKeys[i, 1] in ids_NonSingle:
-                self.idxFramesKeep.append(i)	
+                self.idxFramesKeep.append(i)    
 
         self.lstateColorThresh, lstateCount2 = self.lstateStageDistribution(self.obsKeys[self.idxFramesKeep, :], 1, 3)
 
@@ -741,7 +741,7 @@ class StatesAnalysis(object):
 
         #-- Re-order matrix for Visualization:
         self.C2 = self.reorderMat(self.lstateColorThresh)
-        #-- Visualize array:		
+        #-- Visualize array:        
         self.displayMat(self.lstateColorThresh[self.C2,:], column_labels, './heatMap/heatMapThresholded')
 
         del nonSingle, ids_NonSingle, lstateCount2
@@ -760,11 +760,11 @@ class StatesAnalysis(object):
 
         del self.obsKeysGroup
 
-        """ Iterate through videoIDs if mulit-videos experiment """		
-        if self.multi:			
+        """ Iterate through videoIDs if mulit-videos experiment """     
+        if self.multi:          
             for self.group in self.mouseGroups:
                 self.obsKeysGroup = self.obsKeys[self.obsKeys[:, self.obsKeys.shape[1]-1] == self.group, :]
-                self.transitionsMatrix('./transMatrices/')			
+                self.transitionsMatrix('./transMatrices/')          
 
         # del self.obsKeysGroup
 
@@ -784,7 +784,7 @@ class StatesAnalysis(object):
         """
         transMat = np.zeros(( len(self.uniqueStates), len(self.uniqueStates) ), dtype=float32)
         for i in range(0, len( self.obsKeysGroup )-1):
-            if ( self.obsKeysGroup[i+1, 0] - self.obsKeysGroup[i, 0] ) == 1:				
+            if ( self.obsKeysGroup[i+1, 0] - self.obsKeysGroup[i, 0] ) == 1:                
                 a = self.obsKeysGroup[i, 1]
                 b = self.obsKeysGroup[i+1, 1]
                 transMat[a,b] = transMat[a,b] + 1
@@ -808,7 +808,7 @@ class StatesAnalysis(object):
 
         """
         Matrix visualization
-        """		
+        """     
         if self.multi:
             self.displayTransitionsArray(transMat, './transMatrices/transitionsMat%d' %self.group)
         else:
@@ -838,7 +838,7 @@ class StatesAnalysis(object):
         else:
             self.displayTransitionsArray(transMat, './transMatrices/transitionsMatThresholded')
 
-        del transMat, idx, centroidsOccurence, where_are_NaNs		
+        del transMat, idx, centroidsOccurence, where_are_NaNs       
 
     # Function for computing and visualizing entropy & Mutual Information
     def entropyMIcontrol(self):
@@ -858,8 +858,8 @@ class StatesAnalysis(object):
         """ Compute the Marginal of each Stage (class marginal)
             ..where stagePDF = p(lstate | stage) """
         stagePDF = self.lstateCount
-        stagePDF = stagePDF.astype(float32)		
-        stagePDF = stagePDF/stagePDF.sum(axis=0)		
+        stagePDF = stagePDF.astype(float32)     
+        stagePDF = stagePDF/stagePDF.sum(axis=0)        
         stagePDF = np.concatenate((self.uniqueStates[:, :2], stagePDF), axis=1)
 
         np.savez_compressed('./entropyMI/lstatePDF.npz', lstatePDF=lstatePDF, lstateCount=countsArray)
@@ -871,7 +871,7 @@ class StatesAnalysis(object):
 
         """
         Remove latent states smaller than the desired threshold
-        """		
+        """     
         idx = np.where( self.uniqueStates[:, 1] <= self.threshold )[0]
         np.savez('./entropyMI/removedStates.npz', removedStates=self.uniqueStates[idx, 0])
         #savemat('./entropy/removedStates.mat', mdict={'removedStates':self.uniqueStates[idx, 0]})
@@ -933,10 +933,10 @@ class StatesAnalysis(object):
         Total_sum = Count.sum()
         """ p(latent_state) = sum_over_lstate / total_population """
         p_latent = Count.sum(axis=1)/Total_sum
-        """ p(latent_stage) = sum_over_stage / total_population """	
+        """ p(latent_stage) = sum_over_stage / total_population """ 
         p_stage = Count.sum(axis=0)/Total_sum
 
-        MI = 0				
+        MI = 0              
         """ Iterate through latent states """
         for i in range(Count.shape[0]):
             for j in range(Count.shape[1]):
@@ -947,7 +947,7 @@ class StatesAnalysis(object):
 
                     denominator = p_latent[i]*p_stage[j]
 
-                    MI += p_li_sj*np.log2(p_li_sj/denominator)		
+                    MI += p_li_sj*np.log2(p_li_sj/denominator)      
 
         return MI
 
@@ -964,7 +964,7 @@ class StatesAnalysis(object):
         Total_sum = Count.sum()
         """ p(latent_state) = sum_over_lstate / total_population """
         p_latent = Count.sum(axis=1)/Total_sum
-        """ p(latent_stage) = sum_over_stage / total_population """	
+        """ p(latent_stage) = sum_over_stage / total_population """ 
         p_stage = Count.sum(axis=0)/Total_sum
 
         MI = []
@@ -975,8 +975,8 @@ class StatesAnalysis(object):
             for i in range(Count.shape[0]):
                 if Count[i,j] != 0.:
                     """ Compute p(lstate, stage) """
-                    p_li_sj = Count[i,j]/Total_sum					
-                    denominator = p_latent[i]*p_stage[j]					
+                    p_li_sj = Count[i,j]/Total_sum                  
+                    denominator = p_latent[i]*p_stage[j]                    
                     MI_j += p_li_sj*np.log2(p_li_sj/denominator)
             MI.append(MI_j)
 
@@ -999,7 +999,7 @@ class StatesAnalysis(object):
                 if latent_PDF[p, i] != 0.:
                     Hx += -latent_PDF[p,i]*np.log2(latent_PDF[p,i])
 
-            latent_PDF[p, latent_PDF.shape[1]-1] = Hx			
+            latent_PDF[p, latent_PDF.shape[1]-1] = Hx           
 
         return latent_PDF
 
@@ -1016,7 +1016,7 @@ class StatesAnalysis(object):
         """ total population """
         Total_sum = Count.sum()
 
-        """ p(latent_stage) = sum_over_stage / total_population """	
+        """ p(latent_stage) = sum_over_stage / total_population """ 
         p_stage = Count.sum(axis=0)/Total_sum
         #print("p_stage : ", p_stage)
 
@@ -1067,9 +1067,9 @@ class StatesAnalysis(object):
             # length current latent's :
             lstatePopulation = len(obsKeys)
 
-            # find the per class samples :			
-            length_awake = len(np.where(obsKeys[:, columnStage]==1)[0])			
-            length_nrem = len(np.where(obsKeys[:, columnStage]==2)[0])			
+            # find the per class samples :          
+            length_awake = len(np.where(obsKeys[:, columnStage]==1)[0])         
+            length_nrem = len(np.where(obsKeys[:, columnStage]==2)[0])          
             length_rem = len(np.where(obsKeys[:, columnStage]==3)[0])
 
             vec_len = (length_awake/lstatePopulation, length_nrem/lstatePopulation, length_rem/lstatePopulation)
@@ -1098,7 +1098,7 @@ class StatesAnalysis(object):
         self.centroidsHist = np.zeros(( len(lstatesOfInterest), 3 ), dtype=float32)
         i = 0
         for ci in lstatesOfInterest:
-            idx = np.where(self.obsKeys[:, 1] == ci)[0]		
+            idx = np.where(self.obsKeys[:, 1] == ci)[0]     
 
             self.centroidsHist[i,0] = len(idx)
             self.centroidsHist[i,1] = len(idx)
@@ -1119,7 +1119,7 @@ class StatesAnalysis(object):
 
         self.plotHistogram('./statesHistogram/', 'Exp', .9)
 
-        if self.multi:		
+        if self.multi:      
             """
             Compute the per strain histogram over latent states of interest
             """
@@ -1134,7 +1134,7 @@ class StatesAnalysis(object):
                 strainFrames = self.obsKeys[np.where(self.obsKeys[:, self.obsKeys.shape[1]-1] == strain)[0], :]
                 i = 0
                 for ci in lstatesOfInterest:
-                    idx = np.where(strainFrames[:, 1] == ci)[0]		
+                    idx = np.where(strainFrames[:, 1] == ci)[0]     
 
                     self.centroidsHist[i, 0] = len(idx)
                     self.centroidsHist[i, 1] = len(idx)
@@ -1158,7 +1158,7 @@ class StatesAnalysis(object):
 
             """
             Create the per subject histogram
-            """			
+            """         
             if not os.path.isdir('./statesHistogram/perSubject'):
                 os.makedirs('./statesHistogram/perSubject')
 
@@ -1172,7 +1172,7 @@ class StatesAnalysis(object):
                 subjFrames = self.obsKeys[np.where(self.obsKeys[:, self.obsKeys.shape[1]-2] == subject)[0], :]
                 i = 0
                 for ci in lstatesOfInterest:
-                    idx = np.where(subjFrames[:, 1] == ci)[0]		
+                    idx = np.where(subjFrames[:, 1] == ci)[0]       
 
                     self.centroidsHist[i, 0] = len(idx)
                     self.centroidsHist[i, 1] = len(idx)
@@ -1191,14 +1191,14 @@ class StatesAnalysis(object):
 
                 np.savez('./statesHistogram/perSubject/thresholdedStatesHist%d.npz' %subject, thresholdedStatesHist=self.centroidsHist)
 
-                self.plotHistogram('./statesHistogram/perSubject/', 'S%d' %subject, 1.)	
+                self.plotHistogram('./statesHistogram/perSubject/', 'S%d' %subject, 1.) 
 
     # Function for re-ordering a matrix with linkage:
     def reorderMat(self, matrixToCluster):
         '''
         Method re-organizing a matrix according to linkage.
-        '''		
-        aux_linkage = linkage(matrixToCluster, 'average', metric='euclidean')		
+        '''     
+        aux_linkage = linkage(matrixToCluster, 'average', metric='euclidean')       
         R = dendrogram(aux_linkage, p=0, count_sort='ascending')
 
         return np.asarray(R['ivl']).astype(int)
@@ -1223,10 +1223,10 @@ class StatesAnalysis(object):
         ax = f1.add_subplot(111)
 
         width = .8
-        ax.bar(self.uniqueStates[:, 0], self.uniqueStates[:, 1], width, color=colors[1]['color'], edgecolor = "none")	
+        ax.bar(self.uniqueStates[:, 0], self.uniqueStates[:, 1], width, color=colors[1]['color'], edgecolor = "none")   
         ax.set_xlabel('Latent States')
         ax.set_ylabel('Number of frames')
-        #plt.legend(loc='best')	
+        #plt.legend(loc='best') 
         ax.set_xlim([0, self.uniqueStates.shape[0]])
         ax.set_ylim([0, np.max(self.uniqueStates[:, 1])])
 
@@ -1246,7 +1246,7 @@ class StatesAnalysis(object):
     def displayMat(self, matrixToDisplay, column_labels, filename):
         '''
         Function for displaying an array.
-        '''	
+        ''' 
 
         fig, ax = plt.subplots(figsize=(12,10))
         plt.style.use('bmh')
@@ -1300,7 +1300,7 @@ class StatesAnalysis(object):
         ax1.patch.set_facecolor('None')
         ax1.grid(False)
 
-        norm = matplotlib.colors.Normalize(vmin=0., vmax=1.)	
+        norm = matplotlib.colors.Normalize(vmin=0., vmax=1.)    
 
         hmat = plt.pcolor(A, norm=norm, cmap='RdBu_r')
         plt.colorbar(hmat)
@@ -1349,7 +1349,7 @@ class StatesAnalysis(object):
             tl.set_color('#b2182b')
 
         ax2 = plt.subplot(gs[1])
-        bp2 = ax2.boxplot(d_to_plot_2, patch_artist=True)		
+        bp2 = ax2.boxplot(d_to_plot_2, patch_artist=True)       
         ax2.grid(False)
         ax2.patch.set_facecolor('0.85')
         ax2.patch.set_alpha(0.5)
@@ -1444,7 +1444,7 @@ class StatesAnalysis(object):
 
         plt.setp(xtickNames, fontsize=70)
         ax1.xaxis.set_ticks_position('none')
-        ax1.yaxis.set_ticks_position('none')		
+        ax1.yaxis.set_ticks_position('none')        
 
         yint = []
         locs, l = plt.yticks()
@@ -1457,7 +1457,7 @@ class StatesAnalysis(object):
         ax1.xaxis.labelpad = 30
         ax1.yaxis.labelpad = 20
         ax1.tick_params(direction='out', pad=20)
-        plt.draw()		
+        plt.draw()      
 
         legend_properties = {'weight':'bold', 'size':65}
         plt.legend(frameon=False, borderaxespad=0., prop=legend_properties, bbox_to_anchor=(.77, 1.05), loc=2)
@@ -1473,7 +1473,7 @@ class StatesAnalysis(object):
         '''
 
         plt.style.use('bmh')
-        colors = list(plt.rcParams['axes.prop_cycle'])		
+        colors = list(plt.rcParams['axes.prop_cycle'])      
 
         f1 = plt.figure(figsize=(12,10), frameon=False)
         plt.grid(False)
@@ -1505,7 +1505,7 @@ class StatesAnalysis(object):
         plt.xticks(yint)
         ax.set_xticklabels(ax.get_xticks(), fontweight='bold', fontsize=17)
         ax.xaxis.labelpad = 20
-        ax.yaxis.labelpad = 20		
+        ax.yaxis.labelpad = 20      
 
         legend_properties = {'weight':'bold', 'size':30}
         legend = plt.legend(prop=legend_properties)
@@ -1519,9 +1519,9 @@ class StatesAnalysis(object):
         fname = 'entropiesHist.png'
         fname = os.path.join(saveDir, fname)
         plt.savefig(fname, transparent=True, dpi=100)
-        plt.close(f1)		
+        plt.close(f1)       
 
-    def plotHistogram(self, saveDir, name, yLim):		
+    def plotHistogram(self, saveDir, name, yLim):       
         """
         Function visualizing the histogram over the latent states.
         """
@@ -1539,8 +1539,8 @@ class StatesAnalysis(object):
 
         width = 0.8
 
-        colors = self.lstateColorThresh[self.C2, :]		
-        counts = self.centroidsHist[:, 1][self.C2]		
+        colors = self.lstateColorThresh[self.C2, :]     
+        counts = self.centroidsHist[:, 1][self.C2]      
         for i in range( len(self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, 0]) ):
             ax1.bar(ind[i], counts[i], width, color=(colors[i, 2], colors[i, 1], colors[i, 0]), edgecolor = "none")
 
@@ -1550,18 +1550,18 @@ class StatesAnalysis(object):
             ax1.set_ylabel('Normalized Count', fontweight='bold', fontsize=20)
         ax1.set_xlabel('Latent States', fontweight='bold', fontsize=20)
         ax1.xaxis.set_ticks_position('none')
-        ax1.yaxis.set_ticks_position('none')	
+        ax1.yaxis.set_ticks_position('none')    
 
         yint = []
         locs, l = plt.yticks()
         for each in locs:
             yint.append( round(each, 2) )
-        plt.yticks(yint)	
+        plt.yticks(yint)    
         ax1.set_yticklabels(ax1.get_yticks(), fontweight='bold', fontsize=17)
 
-        ax1.set_xlim([0, len(self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, 0])-1])		
+        ax1.set_xlim([0, len(self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, 0])-1])        
         ax1.set_xticks(np.linspace(0, len(self.uniqueStates[self.uniqueStates[:, 1] > self.threshold, 0]), num=10, dtype=np.int32), minor=False)
-        ax1.set_xticklabels(ax1.get_xticks(), fontweight='bold', fontsize=17)		
+        ax1.set_xticklabels(ax1.get_xticks(), fontweight='bold', fontsize=17)       
 
         red_patch = mpatches.Patch(color=(0.0, 0.0, 1.0), label='Wakefulness')
         green_patch = mpatches.Patch(color=(0.0, 1.0, 0.0), label='NREM')
@@ -1570,9 +1570,9 @@ class StatesAnalysis(object):
         legend = plt.legend(handles=[red_patch, green_patch, blue_patch], borderaxespad=0., fontsize=30, prop=legend_properties)
         frame = legend.get_frame().set_alpha(0)
 
-        fname = 'coloredHistogram' + name + '.png'		
+        fname = 'coloredHistogram' + name + '.png'      
         fname = os.path.join(saveDir, fname)
-        plt.savefig(fname, transparent=True, dpi=100)		
+        plt.savefig(fname, transparent=True, dpi=100)       
         plt.close(fig)
 
     def visualizeDistribution(self, d, A, B, labels, saveDir, filename):
