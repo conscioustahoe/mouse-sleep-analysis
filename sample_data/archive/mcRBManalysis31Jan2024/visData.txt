@@ -1,0 +1,14 @@
+
+ Dataset : /home/mouse-sleep-analysis/sample_data/rgs14.npz
+ visData size: (3072, 6) 
+ visData type: float32 
+ 
+ visData Range: [10. 10. 10. 10. 10. 10.] 
+ 
+ visData min: [-5. -5. -5. -5. -5. -5.] 
+ 
+ visData max: [5. 5. 5. 5. 5. 5.] 
+ 
+ visData mean: [-4.357656   -4.244656   -2.3518598  -0.11374232 -1.7293843  -1.8933954 ] 
+ 
+ visData std: [0.97018206 1.2772449  0.19915415 1.4958987  1.3262959  3.1377275 ] 

@@ -88,7 +88,7 @@ class StatesAnalysis(object):
         self.rescaleFlag = config.getboolean('EXP_DETAILS','rescaleFlag')
         self.rescaling = config.get('EXP_DETAILS','rescaling')
         
-        self.saveDir = "/home/mouse-sleep-analysis/sample_data/mcRBManalysis19Jan2024"
+        self.saveDir = "/home/mouse-sleep-analysis/sample_data/mcRBManalysis"
         
     #-- Data Loading function:
     def loadData(self):
