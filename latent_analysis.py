@@ -88,7 +88,7 @@ class StatesAnalysis(object):
         self.rescaleFlag = config.getboolean('EXP_DETAILS','rescaleFlag')
         self.rescaling = config.get('EXP_DETAILS','rescaling')
         
-        self.saveDir = self.refDir + "sample_data/mcRBManalysisSmoothed"
+        self.saveDir = self.refDir + "sample_data/mcRBManalysis"
         
     #-- Data Loading function:
     def loadData(self):
@@ -607,9 +607,9 @@ class StatesAnalysis(object):
 
             ax.set_yticklabels(ax.get_yticks(), fontweight='bold', fontsize=30)
 
-            fname = 'lstate%d.tiff' %lstate
+            fname = 'lstate%d.jpeg' %lstate
             fname = os.path.join('./groupBoxPlots/', fname)
-            fig.savefig(fname, format='tiff', transparent=True, dpi=100)
+            fig.savefig(fname, format='jpeg', transparent=True, dpi=100)
             plt.close(fig)
 
 
@@ -1286,7 +1286,7 @@ class StatesAnalysis(object):
             l.set_weight("bold")
             l.set_fontsize(15)
 
-        fig.savefig(filename + '.tiff', format='tiff', transparent=True, dpi=100)
+        fig.savefig(filename + '.jpeg', format='jpeg', transparent=True, dpi=100)
         plt.close(fig)
 
     def displayTransitionsArray(self, A, filename):
@@ -1399,9 +1399,9 @@ class StatesAnalysis(object):
                  color='#1a1a1a',            # line colour
                  linewidth=2.)             # line thickness
 
-        fname = 'lstate%d.tiff' %i
+        fname = 'lstate%d.jpeg' %i
         fname = os.path.join(fig_path, fname)
-        fig.savefig(fname, format='tiff', transparent=True, dpi=100)
+        fig.savefig(fname, format='jpeg', transparent=True, dpi=100)
         plt.close(fig)
 
     def MI_stimulusH_barPlot(self, MI_stage, stagesH, overAll, saveDir):
@@ -1462,9 +1462,9 @@ class StatesAnalysis(object):
         legend_properties = {'weight':'bold', 'size':65}
         plt.legend(frameon=False, borderaxespad=0., prop=legend_properties, bbox_to_anchor=(.77, 1.05), loc=2)
 
-        fname = 'MIstageH.tiff'
+        fname = 'MIstageH.jpeg'
         fname = os.path.join(saveDir, fname)
-        fig.savefig(fname, format='tiff', transparent=True, dpi=100)
+        fig.savefig(fname, format='jpeg', transparent=True, dpi=100)
         plt.close(fig)
 
     def entropiesHistogram(self, entropies, saveDir):
