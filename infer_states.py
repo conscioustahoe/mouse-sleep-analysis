@@ -1,10 +1,13 @@
 import os
 import sys
 import numpy as np
+import pandas as pd
 from numpy.random import RandomState
 from scipy.io import loadmat, savemat
 from configparser import ConfigParser
 import PIL.Image
+import matplotlib.pyplot as plt
+from scipy.io import loadmat
 
 class GetStates(object):
     def __init__(self, refDir, expDoneFlag, finalModel):
@@ -26,6 +29,7 @@ class GetStates(object):
         dataFile = np.load(visData)
         self.d = dataFile['data']
         self.obsKeys = dataFile['obsKeys'].astype(int)
+        self.states = loadmat('states.mat')
 
     def computeStates(self):
         p_hc, p_hm = self.hidden_activation()
@@ -47,13 +51,80 @@ class GetStates(object):
             os.makedirs('hmActivation')
 
         image = PIL.Image.fromarray(np.uint8(p_hc * 255.))
+        resized_image = image.resize((1200, 1200))        
         image.save('./hcActivation/%i.png' % self.epochID)
 
         image = PIL.Image.fromarray(np.uint8(p_hm * 255.))
-        image.save('./hmActivation/%i.png' % self.epochID)
+        resized_image = image.resize((1200, 1200))
+        resized_image.save('./hmActivation/%i.png' % self.epochID)
 
         self.binary_latentActivation = (self.p_all >= 0.5).astype(int)
-        np.savez_compressed('latentStates.npz', probabilities=self.p_all, binary=self.binary_latentActivation)
+        
+        plt.figure(figsize=(10, 50))
+
+        # Plot the binary latent activations
+        plt.imshow(self.binary_latentActivation, cmap='gray')
+        plt.title('Binary Latent Activations')
+        plt.xlabel('Hidden units')
+        plt.ylabel('Epoch')
+
+        # Save the figure as an image
+        plt.savefig('./hmActivation/%i-binary.png' % self.epochID)
+
+        # Example binary_latentActivation (replace this with your data)
+        # binary_latentActivation = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+
+        # Convert binary_latentActivation to strings
+        str_repr = np.array([''.join(map(str, row)) for row in self.binary_latentActivation])
+
+        # Find unique rows and their counts
+        unique_bin, uniqueFramesID, ic = np.unique(str_repr, return_index=True, return_inverse=True)
+
+        # Get unique rows based on their indices
+        uniqueAct = self.binary_latentActivation[uniqueFramesID]
+
+        # Count occurrences of each unique row
+        uniqueCount = np.array([np.sum(ic == i) for i in range(len(uniqueFramesID))])
+
+        # Extract rows from p_all using uniqueFramesID
+        p_unique = self.p_all[uniqueFramesID]
+
+        # Display the results
+        print("Unique binary rows:", unique_bin)
+        print("Unique binary rows with counts:")
+        print(pd.DataFrame({'Binary Row': unique_bin, 'Count': uniqueCount}))
+        print("Unique rows from p_all:")
+        print(p_unique, len(uniqueFramesID))
+        
+        uniqueStates = np.zeros((len(uniqueAct), len(uniqueAct[0]) + 2))
+
+        # Initialize inferredStates array
+        inferredStates = np.column_stack((
+            np.zeros(len(self.binary_latentActivation)),
+            self.states['downsampledStates'].astype(int).flatten()[:3072]))
+
+        # Populate uniqueStates and update inferredStates
+        for i in range(len(uniqueAct)):
+            uniqueStates[i, 0] = i + 1
+            uniqueStates[i, 1] = uniqueCount[i]
+            uniqueStates[i, 2:] = uniqueAct[i]
+
+            # Find indices where rows in binary_latentActivation match uniqueAct[i]
+            row_indices = np.where((self.binary_latentActivation == uniqueAct[i]).all(axis=1))[0]
+
+            # Update inferredStates with corresponding indices
+            inferredStates[row_indices, 0] = i + 1
+
+        print("Unique States:")
+        print(uniqueStates)
+        print("Inferred States:")
+        print(inferredStates)        
+                
+        np.savez_compressed('latentStates.npz', 
+                            probabilities=self.p_all, 
+                            binary=self.binary_latentActivation, 
+                            inferredStates=inferredStates,
+                            uniqueStates=uniqueStates)
 
     def computeUniqueStates(self):
         uniqueAct, p_unique = self.compute_uniques(self.binary_latentActivation, self.p_all)
