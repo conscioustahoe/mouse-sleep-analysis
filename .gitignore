@@ -75,9 +75,9 @@ node_modules/
 *.pdf
 
 # Ignore data and media files
-*.jpg
-*.jpeg
-*.png
+# *.jpg
+# *.jpeg
+# *.png
 *.gif
 *.mp3
 *.mp4
