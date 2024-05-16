@@ -1,0 +1,16 @@
+
+ Dataset : /teamspace/studios/this_studio/mouse-sleep-analysis/sample_data/features_1.npz
+ visData size: (5120, 10) 
+ visData type: float32 
+ 
+ visData Range: [10. 10. 10. 10. 10. 10. 10. 10. 10. 10.] 
+ 
+ visData min: [-5. -5. -5. -5. -5. -5. -5. -5. -5. -5.] 
+ 
+ visData max: [5. 5. 5. 5. 5. 5. 5. 5. 5. 5.] 
+ 
+ visData mean: [-0.5228248  -0.7558978  -0.2889908  -0.5228248   0.0619151  -0.21005519
+ -0.2856409  -3.3889642  -2.2935848  -1.5299287 ] 
+ 
+ visData std: [2.6314662  2.2162797  2.4328012  2.6314662  2.4623954  2.6105928
+ 2.424834   0.81404054 2.0833602  2.186744  ] 

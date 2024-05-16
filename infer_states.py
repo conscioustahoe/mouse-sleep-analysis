@@ -29,7 +29,8 @@ class GetStates(object):
         dataFile = np.load(visData)
         self.d = dataFile['data']
         self.obsKeys = dataFile['obsKeys'].astype(int)
-        self.states = loadmat('states.mat')
+        self.states = loadmat('/teamspace/studios/this_studio/mouse-sleep-analysis/sample_data/states.mat')
+        self.states['downsampledStates'] = self.states.pop('states')
 
     def computeStates(self):
         p_hc, p_hm = self.hidden_activation()
@@ -83,7 +84,7 @@ class GetStates(object):
 
         inferredStates = np.column_stack((
             np.zeros(len(self.binary_latentActivation)),
-            self.states['downsampledStates'].astype(int).flatten()[:3072]))
+            self.states['downsampledStates'].astype(int).flatten()[:5120]))
 
         for i in range(len(uniqueAct)):
             uniqueStates[i, 0] = i + 1

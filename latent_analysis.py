@@ -88,7 +88,7 @@ class StatesAnalysis(object):
         self.rescaleFlag = config.getboolean('EXP_DETAILS','rescaleFlag')
         self.rescaling = config.get('EXP_DETAILS','rescaling')
         
-        self.saveDir = self.refDir + "sample_data/mcRBManalysis"
+        self.saveDir = self.refDir + "sample_data/mcRBManalysisMay"
         
     #-- Data Loading function:
     def loadData(self):
@@ -215,7 +215,9 @@ class StatesAnalysis(object):
 
 
         #labels = ['f%s' %i for i in range(self.d.shape[1])]
-        EEG_labels = ['Theta', 'Delta', 'Ratio', 'Slope', 'Complexity']
+        # EEG_labels = ['Theta', 'Delta', 'Ratio', 'Slope', 'Complexity']
+        EEG_labels = ['IndexW', 'IndexR', 'IndexN', 'Index1', 'Index2', 'Index3', 'Index4', '0-0.5hz', 'Theta', 'Delta']
+        # EEG_labels = ['IndexW', 'IndexR', 'IndexN', 'Index1', 'Index2', 'Index3', 'Index4', 'Theta', 'Delta']
         EMG_labels = ['EMG']
         
         # if self.features=='bands':
@@ -245,8 +247,8 @@ class StatesAnalysis(object):
             print(f"self.dinit.shape[1]: {self.dinit.shape[1]}")
             dPlotEEG = [self.dinit[idx, j] for j in range(self.dinit.shape[1]-1)]           
             dPlotEMG = [self.dinit[idx, self.dinit.shape[1]-1]]         
-            print(f"dPlotEEG: {dPlotEEG}")
-            print(f"dPlotEMG: {dPlotEMG}")
+            # print(f"dPlotEEG: {dPlotEEG}")
+            # print(f"dPlotEMG: {dPlotEMG}")
             # visualize boxplots per latent state
             self.BoxPlotsDouble(dPlotEEG, dPlotEMG, './boxPlotsBackProjectedData/', len(idx), i, EEG_labels, 
                                         EMG_labels, length_awake, length_nrem, length_rem, EEG_range, EMG_range)
@@ -626,7 +628,7 @@ class StatesAnalysis(object):
         Set features' labels for visualization part
         """     
         self.visibleFeatures = ['v%d' %(i+1) for i in range(self.d.shape[1])]
-        self.initFeatures = ['Theta', 'Delta', 'Delta:Theta', 'Slope HPC', 'LZW HPC', 'EMG']
+        self.initFeatures = ['IndexW', 'IndexR', 'IndexN', 'Index1', 'Index2', 'Index3', 'Index4', '0-0.5hz', 'Theta', 'Delta']
 
         # if self.features=='bands':
         #     self.initFeatures = ['Delta', 'Theta', 'Delta/Theta', 'EMG']
@@ -1369,8 +1371,11 @@ class StatesAnalysis(object):
             tl.set_color('#00441b')
         
         print("Length of labels_1:", len(labels_1))
+        tick_locs = range(len(labels_1))
+        ax1.set_xticks(tick_locs)
         print("Number of tick locations on ax1:", len(ax1.get_xticks()))
         print("tick locations on ax1:", ax1.get_xticks())
+        
         xtickNames = ax1.set_xticklabels(labels_1)
         plt.setp(xtickNames, rotation=90, fontsize=35, fontweight='bold')
 
